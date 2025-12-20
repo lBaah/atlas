@@ -921,8 +921,6 @@ private:
 	static int luaHouseSetOwnerGuid(lua_State* L);
 	static int luaHouseStartTrade(lua_State* L);
 
-	static int luaHouseGetBeds(lua_State* L);
-	static int luaHouseGetBedCount(lua_State* L);
 
 	static int luaHouseGetDoors(lua_State* L);
 	static int luaHouseGetDoorCount(lua_State* L);

@@ -5,7 +5,6 @@
 
 #include "luascript.h"
 
-#include "bed.h"
 #include "chat.h"
 #include "combat.h"
 #include "configmanager.h"
@@ -1710,7 +1709,6 @@ void LuaScriptInterface::registerFunctions()
 	registerEnum(L, ITEM_TYPE_DOOR);
 	registerEnum(L, ITEM_TYPE_MAGICFIELD);
 	registerEnum(L, ITEM_TYPE_TELEPORT);
-	registerEnum(L, ITEM_TYPE_BED);
 	registerEnum(L, ITEM_TYPE_KEY);
 	registerEnum(L, ITEM_TYPE_RUNE);
 	registerEnum(L, ITEM_TYPE_PODIUM);
@@ -1842,6 +1840,8 @@ void LuaScriptInterface::registerFunctions()
 	registerEnum(L, REPORT_TYPE_STATEMENT);
 	registerEnum(L, REPORT_TYPE_BOT);
 
+	registerEnum(L, SCHEDULER_MINTICKS);
+
 	registerEnum(L, VOCATION_NONE);
 
 	registerEnum(L, SKILL_FIST);
@@ -1945,7 +1945,6 @@ void LuaScriptInterface::registerFunctions()
 	registerEnum(L, TILESTATE_MAGICFIELD);
 	registerEnum(L, TILESTATE_MAILBOX);
 	registerEnum(L, TILESTATE_TRASHHOLDER);
-	registerEnum(L, TILESTATE_BED);
 	registerEnum(L, TILESTATE_DEPOT);
 	registerEnum(L, TILESTATE_BLOCKSOLID);
 	registerEnum(L, TILESTATE_BLOCKPATH);
@@ -3005,8 +3004,6 @@ void LuaScriptInterface::registerFunctions()
 	registerMethod(L, "House", "setOwnerGuid", LuaScriptInterface::luaHouseSetOwnerGuid);
 	registerMethod(L, "House", "startTrade", LuaScriptInterface::luaHouseStartTrade);
 
-	registerMethod(L, "House", "getBeds", LuaScriptInterface::luaHouseGetBeds);
-	registerMethod(L, "House", "getBedCount", LuaScriptInterface::luaHouseGetBedCount);
 
 	registerMethod(L, "House", "getDoors", LuaScriptInterface::luaHouseGetDoors);
 	registerMethod(L, "House", "getDoorCount", LuaScriptInterface::luaHouseGetDoorCount);
@@ -5415,9 +5412,6 @@ int LuaScriptInterface::luaTileGetItemByType(lua_State* L)
 			break;
 		case ITEM_TYPE_TRASHHOLDER:
 			found = tile->hasFlag(TILESTATE_TRASHHOLDER);
-			break;
-		case ITEM_TYPE_BED:
-			found = tile->hasFlag(TILESTATE_BED);
 			break;
 		case ITEM_TYPE_DEPOT:
 			found = tile->hasFlag(TILESTATE_DEPOT);
@@ -12389,39 +12383,6 @@ int LuaScriptInterface::luaHouseStartTrade(lua_State* L)
 	}
 
 	tfs::lua::pushNumber(L, RETURNVALUE_NOERROR);
-	return 1;
-}
-
-int LuaScriptInterface::luaHouseGetBeds(lua_State* L)
-{
-	// house:getBeds()
-	const auto& house = tfs::lua::getSharedPtr<House>(L, 1);
-	if (!house) {
-		lua_pushnil(L);
-		return 1;
-	}
-
-	const auto& beds = house->getBeds() | tfs::views::lock_weak_ptrs | std::ranges::to<std::vector>();
-	lua_createtable(L, beds.size(), 0);
-
-	int index = 0;
-	for (const auto& bedItem : beds) {
-		tfs::lua::pushSharedPtr(L, bedItem);
-		tfs::lua::setItemMetatable(L, -1, bedItem);
-		lua_rawseti(L, -2, ++index);
-	}
-	return 1;
-}
-
-int LuaScriptInterface::luaHouseGetBedCount(lua_State* L)
-{
-	// house:getBedCount()
-	const auto& house = tfs::lua::getSharedPtr<House>(L, 1);
-	if (house) {
-		tfs::lua::pushNumber(L, house->getBedCount());
-	} else {
-		lua_pushnil(L);
-	}
 	return 1;
 }
 

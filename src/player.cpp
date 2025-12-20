@@ -5,7 +5,6 @@
 
 #include "player.h"
 
-#include "bed.h"
 #include "chat.h"
 #include "combat.h"
 #include "configmanager.h"
@@ -1038,10 +1037,6 @@ void Player::onCreatureAppear(const std::shared_ptr<Creature>& creature, bool is
 		g_game.checkPlayersRecord();
 
 		IOLoginData::updateOnlineStatus(guid, true);
-
-		if (const auto& bed = g_game.getBedBySleeper(guid)) {
-			bed->wakeUp(getPlayer());
-		}
 
 		if (const auto& guild = getGuild()) {
 			guild->addMember(getPlayer());
