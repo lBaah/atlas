@@ -3051,6 +3051,7 @@ void LuaScriptInterface::registerFunctions()
 	registerMethod(L, "ItemType", "getArticle", LuaScriptInterface::luaItemTypeGetArticle);
 	registerMethod(L, "ItemType", "getDescription", LuaScriptInterface::luaItemTypeGetDescription);
 	registerMethod(L, "ItemType", "getSlotPosition", LuaScriptInterface::luaItemTypeGetSlotPosition);
+	registerMethod(L, "ItemType", "getBedPartnerDirection", LuaScriptInterface::luaItemTypeGetBedPartnerDirection);
 
 	registerMethod(L, "ItemType", "getCharges", LuaScriptInterface::luaItemTypeGetCharges);
 	registerMethod(L, "ItemType", "getFluidSource", LuaScriptInterface::luaItemTypeGetFluidSource);
@@ -12888,6 +12889,19 @@ int LuaScriptInterface::luaItemTypeGetSlotPosition(lua_State* L)
 	} else {
 		lua_pushnil(L);
 	}
+	return 1;
+}
+
+int LuaScriptInterface::luaItemTypeGetBedPartnerDirection(lua_State* L)
+{
+	// itemType:getBedPartnerDirection()
+	const ItemType* itemType = tfs::lua::getUserdata<const ItemType>(L, 1);
+	if (!itemType || !itemType->isBed() || itemType->bedPartnerDir == DIRECTION_NONE) {
+		lua_pushnil(L);
+		return 1;
+	}
+
+	tfs::lua::pushNumber(L, itemType->bedPartnerDir);
 	return 1;
 }
 
