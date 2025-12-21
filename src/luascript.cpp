@@ -13039,7 +13039,7 @@ int LuaScriptInterface::luaItemTypeGetBedPartnerDirection(lua_State* L)
 {
 	// itemType:getBedPartnerDirection()
 	const ItemType* itemType = tfs::lua::getUserdata<const ItemType>(L, 1);
-	if (!itemType || !itemType->isBed() || itemType->bedPartnerDir == DIRECTION_NONE) {
+	if (!itemType || itemType->bedPartnerDir == DIRECTION_NONE) {
 		lua_pushnil(L);
 		return 1;
 	}
